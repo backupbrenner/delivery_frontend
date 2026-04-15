@@ -615,7 +615,7 @@
                 <div class="hint" style="margin-top:16px">Tempo estimado: 35 a 50 min</div>
 
                 <div style="margin-top:16px">
-                  <button class="btn btn-block" onclick="state.pedidoFinalizado=true; render()">Finalizar pedido</button>
+                  <button class="btn btn-block" onclick="finalizarPedido()">Finalizar pedido</button>
                 </div>
                 <div class="footer-note">Protótipo visual em nível app delivery, pronto para integrar com n8n e pagamento.</div>
               </div>
@@ -624,7 +624,45 @@
         </div>
       `;
     }
+    async function finalizarPedido() {
+  try {
+    const payload = {
+      cliente: state.cliente,
+      tipoEntrega: state.tipoEntrega,
+      total: total(),
+      itens: state.itens.map((i) => {
+        const menu = getMenuItem(i.menuId);
+        return {
+          nome: menu.nome,
+          quantidade: i.quantidade,
+          preco: menu.preco,
+          observacao: i.observacao || ""
+        };
+      })
+    };
 
+    const res = await fetch("https://api.meun8n-server.duckdns.org/api/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Erro ao enviar pedido");
+    }
+
+    alert("Pedido enviado com sucesso! Nº " + data.orderId);
+    state.pedidoFinalizado = true;
+    render();
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao enviar pedido: " + err.message);
+  }
+}
     window.updateItem = updateItem;
     window.changeMenu = changeMenu;
     window.toggleExpand = toggleExpand;
