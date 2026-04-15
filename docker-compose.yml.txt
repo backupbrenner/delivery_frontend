@@ -1,9 +1,0 @@
-version: "3.8"
-
-services:
-  marmitas-frontend:
-    build: .
-    container_name: marmitas-frontend
-    restart: unless-stopped
-    ports:
-      - "8085:80"
