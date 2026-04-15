@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marmitas - App Delivery</title>
+  <style>
+    :root{
+      --bg:#fff8f2;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --line:#ececec;
+      --brand:#ea580c;
+      --brand-2:#fb923c;
+      --soft:#fff7ed;
+      --soft-2:#fff1e6;
+      --ok:#16a34a;
+      --danger:#dc2626;
+      --shadow:0 12px 30px rgba(0,0,0,.08);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#fff7ed 0%, #fff 45%);color:var(--text)}
+    .app{max-width:1240px;margin:0 auto;padding:14px;display:grid;gap:18px}
+    @media(min-width:1100px){.app{grid-template-columns:minmax(0,1fr) 380px;align-items:start}.sticky{position:sticky;top:14px}}
+    .card{background:var(--card);border:1px solid #fed7aa;border-radius:28px;box-shadow:var(--shadow);overflow:hidden}
+    .hero{position:relative;min-height:290px;color:#fff}
+    .hero .slides{position:absolute;inset:0;overflow:hidden}
+    .hero .slides img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;animation:fade 18s infinite}
+    .hero .slides img:nth-child(1){animation-delay:0s}
+    .hero .slides img:nth-child(2){animation-delay:6s}
+    .hero .slides img:nth-child(3){animation-delay:12s}
+    @keyframes fade{0%{opacity:0}6%{opacity:.92}28%{opacity:.92}34%{opacity:0}100%{opacity:0}}
+    .hero .overlay{position:relative;z-index:2;min-height:290px;padding:22px;background:linear-gradient(180deg,rgba(0,0,0,.22),rgba(0,0,0,.35))}
+    .badge{display:inline-flex;align-items:center;gap:8px;border-radius:999px;background:rgba(255,255,255,.18);padding:8px 12px;font-size:13px;font-weight:700}
+    .hero h1{margin:14px 0 8px;font-size:34px;line-height:1.05}
+    .hero p{margin:0;max-width:680px;color:rgba(255,255,255,.95)}
+    .hero .meta{margin-top:16px;display:flex;flex-wrap:wrap;gap:10px}
+    .pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:10px 14px;font-size:13px;font-weight:700;background:rgba(255,255,255,.16)}
+    .section{padding:20px}
+    .section h2{margin:0 0 16px;font-size:22px}
+    .muted{color:var(--muted)}
+    .small{font-size:12px}
+    .grid{display:grid;gap:14px}
+    .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+    @media(min-width:760px){.grid-2{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:1fr 1fr 1fr}.grid-4{grid-template-columns:repeat(4,1fr)}}
+    label.lbl{display:block;font-size:14px;font-weight:700;margin-bottom:7px}
+    input[type=text],select,textarea{width:100%;height:46px;border:1px solid var(--line);border-radius:16px;padding:0 14px;font-size:15px;background:#fff}
+    textarea{min-height:92px;padding:12px 14px;height:auto;resize:vertical}
+    .option{border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;gap:10px;align-items:flex-start;cursor:pointer;background:#fff}
+    .option.active{border-color:#fdba74;background:var(--soft)}
+    .subcard{border:1px solid var(--line);border-radius:22px;padding:16px;background:#fafafa}
+    .quick{width:100%;text-align:left;border:1px solid var(--line);border-radius:20px;padding:16px;background:#fff;cursor:pointer;font-size:15px}
+    .quick strong{display:block;margin-bottom:4px}
+    .notice{background:#fff7ed;border:1px dashed #fdba74;color:#9a3412;border-radius:18px;padding:14px}
+    .menu-chip{display:inline-block;padding:7px 11px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:12px;margin:4px 6px 0 0}
+    .item-card{background:#fff;border:1px solid #fed7aa;border-radius:26px;overflow:hidden;box-shadow:var(--shadow)}
+    .item-header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:16px 18px;background:linear-gradient(180deg,#fff,#fff7ed);cursor:pointer}
+    .item-header h3{margin:0 0 4px;font-size:20px}
+    .item-sub{font-size:13px;color:var(--muted);line-height:1.45}
+    .price-pill{background:#f3f4f6;border-radius:999px;padding:7px 12px;font-size:14px;font-weight:700;white-space:nowrap}
+    .toggle{width:38px;height:38px;border-radius:999px;border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;font-size:18px}
+    .item-body{padding:0 18px 18px}
+    details.rules{border:1px dashed #fdba74;background:#fff7ed;border-radius:18px;padding:12px 14px;margin-bottom:14px}
+    details.rules summary{cursor:pointer;font-weight:700;color:#9a3412}
+    .rules-body{margin-top:10px;font-size:14px;color:#7c2d12;line-height:1.55}
+    .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(min-width:760px){.choices.grid-3{grid-template-columns:repeat(3,1fr)}}
+    .check{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:18px;padding:12px;background:#fff;cursor:pointer;font-size:14px}
+    .check.active{border-color:#fdba74;background:var(--soft)}
+    .check.disabled{opacity:.45;cursor:not-allowed}
+    .qty{display:flex;align-items:center;gap:10px}
+    .icon-btn,.btn{border:none;cursor:pointer;border-radius:18px;transition:.15s ease}
+    .icon-btn{width:42px;height:42px;background:#fff;border:1px solid var(--line);font-size:20px}
+    .btn{height:48px;padding:0 18px;background:var(--brand);color:#fff;font-weight:700;font-size:15px}
+    .btn:hover{filter:brightness(.98)}
+    .btn-outline{background:#fff;color:var(--text);border:1px solid var(--line)}
+    .btn-soft{background:var(--soft);color:#9a3412;border:1px solid #fdba74}
+    .btn-block{width:100%}
+    .actions{display:flex;flex-wrap:wrap;gap:10px}
+    .summary-item{border:1px solid var(--line);border-radius:18px;padding:14px;background:#fff}
+    .row{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .sep{height:1px;background:var(--line);margin:14px 0}
+    .hint{background:#fafafa;border:1px solid var(--line);border-radius:18px;padding:14px;color:var(--muted);font-size:14px}
+    .footer-note{font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
+    .success{max-width:760px;margin:22px auto}
+    .success-icon{width:68px;height:68px;border-radius:999px;display:flex;align-items:center;justify-content:center;background:#dcfce7;color:#166534;font-size:36px;margin:0 auto 12px}
+    .text-right{text-align:right}
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    const API_BASE = "https://api.meun8n-server.duckdns.org";
+
+    const MENU = {
+      items: [],
+      taxaEntrega: 0
+    };
+
+    function uid(){ return Math.random().toString(36).slice(2) + Date.now().toString(36); }
+    function getMenuItem(id){
+      return MENU.items.find(x => x.id === id) || MENU.items[0] || {
+        id: "",
+        nome: "",
+        preco: 0,
+        base: [],
+        feijoes: [],
+        acompanhamentosMax: 0,
+        acompanhamentos: [],
+        carneModo: "fixa",
+        carneTexto: "",
+        carnesOpcoes: [],
+        carnesQtd: 0,
+        detalhes: ""
+      };
+    }
+
+    function mapApiMenuItem(row){
+      return {
+        id: row.code,
+        nome: row.name,
+        preco: Number(row.price),
+        base: row.base_items || [],
+        feijoes: row.feijoes || [],
+        acompanhamentosMax: row.acompanhamentos_max || 2,
+        acompanhamentos: row.acompanhamentos || [],
+        carneModo: row.carne_modo,
+        carneTexto: row.carne_texto || "",
+        carnesOpcoes: row.carnes_opcoes || [],
+        carnesQtd: row.carnes_qtd || 0,
+        detalhes: row.detalhes || ""
+      };
+    }
+
+    function createItem(menuId){
+      const fallbackId = MENU.items[0]?.id;
+      const finalId = menuId || fallbackId;
+      const menu = getMenuItem(finalId);
+      return {
+        id: uid(),
+        menuId: menu.id,
+        feijao: menu.feijoes[0] || "",
+        carnesSelecionadas: menu.carneModo === "selecionar" ? (menu.carnesOpcoes || []).slice(0, menu.carnesQtd) : [],
+        acompanhamentos: [],
+        observacao: "",
+        quantidade: 1,
+        expanded: true
+      };
+    }
+
+    const FAVORITE_ORDER = [{
+      menuId: "casa-mista",
+      feijao: "Tropeiro",
+      carnesSelecionadas: [],
+      acompanhamentos: ["Batata Frita", "Macarrão"],
+      observacao: "Sem banana à milanesa",
+      quantidade: 1,
+      expanded: true
+    }];
+
+    const LAST_ORDER = [{
+      menuId: "especial",
+      feijao: "Caldo",
+      carnesSelecionadas: ["Carne", "Frango", "Linguiça"],
+      acompanhamentos: ["Legumes", "Mandioca Coz"],
+      observacao: "Caprichar na mandioca",
+      quantidade: 1,
+      expanded: true
+    }];
+
+    const state = {
+      clienteReconhecido: true,
+      tipoEntrega: "motoboy",
+      usarEnderecoSalvo: true,
+      pedidoFinalizado: false,
+      carregando: true,
+      loja: null,
+      cliente: {
+        nome: "",
+        telefone: "",
+        endereco: "",
+        bairro: "",
+        referencia: "",
+        observacaoGeral: ""
+      },
+      itens: []
+    };
+
+    function formatBRL(v){ return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v); }
+    function itemTotal(item){ return getMenuItem(item.menuId).preco * item.quantidade; }
+    function subtotal(){ return state.itens.reduce((sum, item) => sum + itemTotal(item), 0); }
+    function entrega(){ return state.tipoEntrega === "motoboy" ? MENU.taxaEntrega : 0; }
+    function total(){ return subtotal() + entrega(); }
+    function cloneOrder(order){ return order.map(o => ({...o, id: uid(), expanded: true})); }
+
+    function renderMenuOptions(selected){
+      return MENU.items.map(m => `<option value="${m.id}" ${selected === m.id ? "selected" : ""}>${m.nome} - ${formatBRL(m.preco)}</option>`).join("");
+    }
+
+    function updateItem(id, patch){
+      state.itens = state.itens.map(item => item.id === id ? {...item, ...patch} : item);
+      render();
+    }
+
+    function changeMenu(id, menuId){
+      const menu = getMenuItem(menuId);
+      updateItem(id, {
+        menuId,
+        feijao: menu.feijoes[0],
+        carnesSelecionadas: menu.carneModo === "selecionar" ? menu.carnesOpcoes.slice(0, menu.carnesQtd) : [],
+        acompanhamentos: []
+      });
+    }
+
+    function toggleExpand(id){
+      state.itens = state.itens.map(item => item.id === id ? {...item, expanded: !item.expanded} : item);
+      render();
+    }
+
+    function adjustQty(id, diff){
+      const item = state.itens.find(x => x.id === id);
+      updateItem(id, { quantidade: Math.max(1, item.quantidade + diff) });
+    }
+
+    function removeItem(id){
+      if(state.itens.length === 1) return;
+      state.itens = state.itens.filter(x => x.id !== id);
+      render();
+    }
+
+    function addNewItem(){
+      state.itens = state.itens.map(x => ({...x, expanded: false}));
+      state.itens.push(createItem());
+      render();
+      setTimeout(() => window.scrollTo({top: document.body.scrollHeight, behavior: "smooth"}), 30);
+    }
+
+    function toggleAcompanhamento(id, nome){
+      const item = state.itens.find(x => x.id === id);
+      const menu = getMenuItem(item.menuId);
+      const has = item.acompanhamentos.includes(nome);
+      let next = [...item.acompanhamentos];
+      if(has){
+        next = next.filter(x => x !== nome);
+      } else if(next.length < menu.acompanhamentosMax){
+        next.push(nome);
+      }
+      updateItem(id, { acompanhamentos: next });
+    }
+
+    function toggleCarne(id, nome){
+      const item = state.itens.find(x => x.id === id);
+      const menu = getMenuItem(item.menuId);
+      if(menu.carneModo !== "selecionar") return;
+      const has = item.carnesSelecionadas.includes(nome);
+      let next = [...item.carnesSelecionadas];
+      if(has){
+        if(next.length === 1) return;
+        next = next.filter(x => x !== nome);
+      } else {
+        if(next.length >= menu.carnesQtd) return;
+        next.push(nome);
+      }
+      updateItem(id, { carnesSelecionadas: next });
+    }
+
+    function itemSubtitle(item){
+      const menu = getMenuItem(item.menuId);
+      return `${menu.nome} · Feijão: ${item.feijao} · Qtd ${item.quantidade}`;
+    }
+
+    function renderItemCard(item, index){
+      const menu = getMenuItem(item.menuId);
+      return `
+        <div class="item-card">
+          <div class="item-header" onclick="toggleExpand('${item.id}')">
+            <div>
+              <h3>Marmita ${index + 1}</h3>
+              <div class="item-sub">${itemSubtitle(item)}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="price-pill">${formatBRL(itemTotal(item))}</div>
+              <div class="toggle">${item.expanded ? "▴" : "▾"}</div>
+            </div>
+          </div>
+
+          ${item.expanded ? `
+          <div class="item-body">
+            <details class="rules">
+              <summary>Ver detalhes e regras desta opção</summary>
+              <div class="rules-body">
+                <strong>${menu.nome}</strong><br>
+                ${menu.detalhes}<br><br>
+                <strong>Base inclusa:</strong> ${menu.base.join(", ")}<br>
+                <strong>Feijão:</strong> escolha 1 entre ${menu.feijoes.join(" ou ")}<br>
+                <strong>Acompanhamentos:</strong> até ${menu.acompanhamentosMax}<br>
+                ${menu.carneModo === "fixa" ? `<strong>Carne:</strong> ${menu.carneTexto}` : `<strong>Carnes:</strong> escolha ${menu.carnesQtd}`}
+              </div>
+            </details>
+
+            <div class="grid grid-2">
+              <div>
+                <label class="lbl">Tipo de marmita</label>
+                <select onchange="changeMenu('${item.id}', this.value)">
+                  ${renderMenuOptions(item.menuId)}
+                </select>
+              </div>
+              <div>
+                <label class="lbl">Base inclusa</label>
+                <div class="subcard">${menu.base.map(x => `<span class="menu-chip">${x}</span>`).join("")}</div>
+              </div>
+            </div>
+
+            <div style="margin-top:16px">
+              <label class="lbl">Escolha o feijão</label>
+              <div class="choices">
+                ${menu.feijoes.map(nome => `
+                  <div class="check ${item.feijao === nome ? "active" : ""}" onclick="updateItem('${item.id}', { feijao: '${nome}' })">
+                    <input type="radio" ${item.feijao === nome ? "checked" : ""}>
+                    <span>${nome}</span>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+
+            ${menu.carneModo === "fixa" ? `
+              <div style="margin-top:16px">
+                <label class="lbl">Carne inclusa</label>
+                <div class="subcard"><strong>${menu.carneTexto}</strong></div>
+              </div>
+            ` : `
+              <div style="margin-top:16px">
+                <div class="row" style="margin-bottom:8px">
+                  <label class="lbl" style="margin:0">Escolha as carnes</label>
+                  <div class="muted small">Escolha até ${menu.carnesQtd}</div>
+                </div>
+                <div class="choices grid-3">
+                  ${menu.carnesOpcoes.map(nome => {
+                    const checked = item.carnesSelecionadas.includes(nome);
+                    const disabled = !checked && item.carnesSelecionadas.length >= menu.carnesQtd;
+                    return `<div class="check ${checked ? "active" : ""} ${disabled ? "disabled" : ""}" onclick="${disabled ? "" : `toggleCarne('${item.id}','${nome}')`}"><input type="checkbox" ${checked ? "checked" : ""} ${disabled ? "disabled" : ""}><span>${nome}</span></div>`;
+                  }).join("")}
+                </div>
+              </div>
+            `}
+
+            <div style="margin-top:16px">
+              <div class="row" style="margin-bottom:8px">
+                <label class="lbl" style="margin:0">Acompanhamentos</label>
+                <div class="muted small">Escolha até ${menu.acompanhamentosMax}</div>
+              </div>
+              <div class="choices grid-3">
+                ${menu.acompanhamentos.map(nome => {
+                  const checked = item.acompanhamentos.includes(nome);
+                  const disabled = !checked && item.acompanhamentos.length >= menu.acompanhamentosMax;
+                  return `<div class="check ${checked ? "active" : ""} ${disabled ? "disabled" : ""}" onclick="${disabled ? "" : `toggleAcompanhamento('${item.id}','${nome}')`}"><input type="checkbox" ${checked ? "checked" : ""} ${disabled ? "disabled" : ""}><span>${nome}</span></div>`;
+                }).join("")}
+              </div>
+            </div>
+
+            <div class="grid grid-2" style="margin-top:16px;align-items:end">
+              <div>
+                <label class="lbl">Observação do item</label>
+                <textarea oninput="updateItem('${item.id}', { observacao: this.value })" placeholder="Ex.: sem banana à milanesa, caldo separado">${item.observacao || ""}</textarea>
+              </div>
+              <div>
+                <label class="lbl">Quantidade</label>
+                <div class="qty">
+                  <button class="icon-btn" onclick="event.stopPropagation(); adjustQty('${item.id}', -1)">−</button>
+                  <div style="width:42px;text-align:center;font-weight:700">${item.quantidade}</div>
+                  <button class="icon-btn" onclick="event.stopPropagation(); adjustQty('${item.id}', 1)">+</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="actions" style="margin-top:16px">
+              <button class="btn btn-outline" onclick="removeItem('${item.id}')">Remover</button>
+            </div>
+          </div>
+          ` : ``}
+        </div>
+      `;
+    }
+
+    function renderSuccess(){
+      return `
+        <div class="success">
+          <div class="card">
+            <div class="section" style="text-align:center">
+              <div class="success-icon">✓</div>
+              <h1 style="margin:0 0 8px;font-size:32px">Pedido recebido com sucesso</h1>
+              <p class="muted" style="margin:0 0 22px">Seu pedido foi montado e está pronto para seguir para o pagamento.</p>
+              <div class="subcard" style="text-align:left;max-width:440px;margin:0 auto 18px">
+                <div class="row"><span class="muted">Pedido</span><strong>#1234</strong></div>
+                <div class="row" style="margin-top:10px"><span class="muted">Itens</span><strong>${state.itens.length}</strong></div>
+                <div class="row" style="margin-top:10px"><span class="muted">Total</span><strong>${formatBRL(total())}</strong></div>
+              </div>
+              <div class="grid grid-2">
+                <button class="btn btn-block">Pagar agora</button>
+                <button class="btn btn-outline btn-block">Voltar para o WhatsApp</button>
+              </div>
+              <div style="margin-top:14px">
+                <button class="btn btn-outline" onclick="state.pedidoFinalizado=false; render()">Editar pedido</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function carregarDadosIniciais() {
+      try {
+        const [storeRes, menuRes] = await Promise.all([
+          fetch(`${API_BASE}/api/store`),
+          fetch(`${API_BASE}/api/menu`)
+        ]);
+
+        if (!storeRes.ok) {
+          throw new Error("Erro ao carregar loja");
+        }
+
+        if (!menuRes.ok) {
+          throw new Error("Erro ao carregar cardápio");
+        }
+
+        const loja = await storeRes.json();
+        const menu = await menuRes.json();
+
+        MENU.items = menu.map(mapApiMenuItem);
+        MENU.taxaEntrega = Number(loja.delivery_fee || 0);
+
+        state.loja = loja;
+        state.cliente.endereco = loja.address || "";
+        state.cliente.bairro = loja.bairro || "";
+        state.cliente.referencia = loja.referencia || "";
+        state.cliente.nome = state.cliente.nome || "";
+        state.cliente.telefone = state.cliente.telefone || "";
+
+        if (!MENU.items.length) {
+          throw new Error("Nenhum item de cardápio encontrado");
+        }
+
+        state.itens = [createItem(MENU.items[0].id)];
+        state.carregando = false;
+
+        render();
+      } catch (error) {
+        console.error("Erro ao carregar dados iniciais:", error);
+        document.getElementById("app").innerHTML = `
+          <div style="max-width:700px;margin:40px auto;padding:20px;font-family:Arial,sans-serif">
+            <h2>Não foi possível carregar o cardápio</h2>
+            <p>Confira se a API está online e tente novamente.</p>
+            <pre style="white-space:pre-wrap;background:#f5f5f5;padding:12px;border-radius:8px">${error.message}</pre>
+          </div>
+        `;
+      }
+    }
+
+    function render(){
+      const app = document.getElementById("app");
+
+      if(state.carregando){
+        app.innerHTML = `
+          <div style="max-width:700px;margin:40px auto;padding:20px;font-family:Arial,sans-serif">
+            <h2>Carregando cardápio...</h2>
+            <p>Aguarde enquanto buscamos os dados da loja.</p>
+          </div>
+        `;
+        return;
+      }
+
+      if(state.pedidoFinalizado){
+        app.innerHTML = renderSuccess();
+        return;
+      }
+
+      app.innerHTML = `
+        <div class="app">
+          <div>
+            <div class="card">
+              <div class="hero">
+                <div class="slides">
+                  <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1400&q=80" alt="Prato 1">
+                  <img src="https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=1400&q=80" alt="Prato 2">
+                  <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80" alt="Prato 3">
+                </div>
+                <div class="overlay">
+                  <div class="badge">🛵 Delivery de Marmitas</div>
+                  <h1>${state.loja?.name || "Monte seu pedido"}</h1>
+                  <p>Escolha a marmita, selecione feijão, acompanhamentos e finalize em poucos toques.</p>
+                  <div class="meta">
+                    <div class="pill">⚠️ Somente para viagem</div>
+                    <div class="pill">👋 Olá, ${state.cliente.nome}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="notice" style="margin-top:18px">
+              <strong>Aviso:</strong> todas as opções desta página são para <strong>viagem</strong>. O valor e as regras seguem o cardápio impresso.
+            </div>
+
+            <div class="card" style="margin-top:18px">
+              <div class="section">
+                <h2>Entrega</h2>
+                <div class="grid grid-2">
+                  <div class="option ${state.tipoEntrega === "motoboy" ? "active" : ""}" onclick="state.tipoEntrega='motoboy'; render()">
+                    <input type="radio" ${state.tipoEntrega === "motoboy" ? "checked" : ""}>
+                    <div><strong>Entrega por motoboy</strong><div class="muted small">Receba no endereço cadastrado</div></div>
+                  </div>
+                  <div class="option ${state.tipoEntrega === "retirada" ? "active" : ""}" onclick="state.tipoEntrega='retirada'; render()">
+                    <input type="radio" ${state.tipoEntrega === "retirada" ? "checked" : ""}>
+                    <div><strong>Retirada no local</strong><div class="muted small">Sem taxa de entrega</div></div>
+                  </div>
+                </div>
+
+                ${state.tipoEntrega === "motoboy" ? `
+                <div style="margin-top:16px">
+                  <div class="subcard">
+                    <div class="row">
+                      <div>
+                        <strong>Endereço salvo</strong>
+                        <div class="muted small" style="margin-top:6px">${state.cliente.endereco}, ${state.cliente.bairro}<br>Referência: ${state.cliente.referencia}</div>
+                      </div>
+                      <div>
+                        <button class="btn ${state.usarEnderecoSalvo ? "" : "btn-outline"}" onclick="state.usarEnderecoSalvo=!state.usarEnderecoSalvo; render()">${state.usarEnderecoSalvo ? "Usando este endereço" : "Usar este endereço"}</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  ${!state.usarEnderecoSalvo ? `
+                  <div class="grid grid-2" style="margin-top:16px">
+                    <div><label class="lbl">Endereço</label><input type="text" value="${state.cliente.endereco}" oninput="state.cliente.endereco=this.value"></div>
+                    <div><label class="lbl">Bairro</label><input type="text" value="${state.cliente.bairro}" oninput="state.cliente.bairro=this.value"></div>
+                    <div style="grid-column:1/-1"><label class="lbl">Referência</label><input type="text" value="${state.cliente.referencia}" oninput="state.cliente.referencia=this.value"></div>
+                  </div>
+                  ` : ``}
+                </div>
+                ` : ``}
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:18px">
+              <div class="section">
+                <h2>Pedidos rápidos</h2>
+                <div class="grid grid-3">
+                  <button class="quick" onclick="state.itens=cloneOrder(LAST_ORDER); render()">
+                    <strong>Repetir último pedido</strong>
+                    <span class="muted small">Carrega a combinação mais recente</span>
+                  </button>
+                  <button class="quick" onclick="state.itens=cloneOrder(FAVORITE_ORDER); render()">
+                    <strong>Pedido de sempre</strong>
+                    <span class="muted small">Preenche sua combinação favorita</span>
+                  </button>
+                  <button class="quick" onclick="state.itens=[createItem()]; render()">
+                    <strong>Montar novo pedido</strong>
+                    <span class="muted small">Começa do zero, mantendo seus dados</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:18px;display:grid;gap:16px">
+              ${state.itens.map((item, index) => renderItemCard(item, index)).join("")}
+            </div>
+
+            <div style="margin-top:16px">
+              <button class="btn btn-soft btn-block" onclick="addNewItem()">+ Adicionar outra marmita</button>
+            </div>
+
+            <div class="card" style="margin-top:18px">
+              <div class="section">
+                <h2>Dados do cliente</h2>
+                <div class="grid grid-2">
+                  <div><label class="lbl">Nome</label><input type="text" value="${state.cliente.nome}" oninput="state.cliente.nome=this.value"></div>
+                  <div><label class="lbl">Telefone</label><input type="text" value="${state.cliente.telefone}" oninput="state.cliente.telefone=this.value"></div>
+                  <div style="grid-column:1/-1"><label class="lbl">Observação geral</label><textarea oninput="state.cliente.observacaoGeral=this.value" placeholder="Ex.: tocar campainha, entregar na portaria">${state.cliente.observacaoGeral || ""}</textarea></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sticky">
+            <div class="card">
+              <div class="section">
+                <h2>Resumo do pedido</h2>
+                <div style="display:grid;gap:10px">
+                  ${state.itens.map((item, idx) => {
+                    const menu = getMenuItem(item.menuId);
+                    return `
+                      <div class="summary-item">
+                        <div class="row">
+                          <div>
+                            <strong>Marmita ${idx + 1}</strong>
+                            <div class="muted small" style="margin-top:4px">${menu.nome}<br>Feijão: ${item.feijao}</div>
+                          </div>
+                          <strong>${formatBRL(itemTotal(item))}</strong>
+                        </div>
+                      </div>
+                    `;
+                  }).join("")}
+                </div>
+
+                <div class="sep"></div>
+
+                <div class="row"><span class="muted">Itens</span><span>${state.itens.length}</span></div>
+                <div class="row" style="margin-top:10px"><span class="muted">Subtotal</span><span>${formatBRL(subtotal())}</span></div>
+                <div class="row" style="margin-top:10px"><span class="muted">Entrega</span><span>${formatBRL(entrega())}</span></div>
+                <div class="row" style="margin-top:14px;font-size:18px"><strong>Total</strong><strong>${formatBRL(total())}</strong></div>
+
+                <div class="hint" style="margin-top:16px">Tempo estimado: 35 a 50 min</div>
+
+                <div style="margin-top:16px">
+                  <button class="btn btn-block" onclick="state.pedidoFinalizado=true; render()">Finalizar pedido</button>
+                </div>
+                <div class="footer-note">Protótipo visual em nível app delivery, pronto para integrar com n8n e pagamento.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    window.updateItem = updateItem;
+    window.changeMenu = changeMenu;
+    window.toggleExpand = toggleExpand;
+    window.adjustQty = adjustQty;
+    window.removeItem = removeItem;
+    window.addNewItem = addNewItem;
+    window.toggleAcompanhamento = toggleAcompanhamento;
+    window.toggleCarne = toggleCarne;
+    window.state = state;
+    window.render = render;
+    carregarDadosIniciais();
+  </script>
+</body>
+</html>
