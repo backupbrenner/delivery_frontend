@@ -415,8 +415,8 @@
     async function carregarDadosIniciais() {
       try {
         const [storeRes, menuRes] = await Promise.all([
-          fetch(`${API_BASE}/api/store`),
-          fetch(`${API_BASE}/api/menu`)
+          fetch(`${API_BASE}/api/store?slug=marmitas`),
+          fetch(`${API_BASE}/api/menu?slug=marmitas`)
         ]);
 
         if (!storeRes.ok) {
