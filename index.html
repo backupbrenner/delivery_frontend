@@ -627,6 +627,7 @@
     async function finalizarPedido() {
   try {
     const payload = {
+      store_id: 1,
       cliente: state.cliente,
       tipoEntrega: state.tipoEntrega,
       total: total(),
